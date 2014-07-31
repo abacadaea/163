@@ -1,0 +1,23 @@
+<html>
+  <head>
+    <title>163</title>
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    {% block css %}{% endblock %}
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="row">
+      </div> <!-- /row -->
+
+      <div class="row">
+      {% block main_body %}{% endblock %}
+      </div> <!-- /row -->
+    </div> <!-- /container -->
+
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+    {% block js %}
+    {% endblock %}
+  </body>
+</html>

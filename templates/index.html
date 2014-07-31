@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block css %}
+<link rel="stylesheet" type="text/css" href="/css/game.css">
+{% endblock %}
+
+{% block main_body %}
+<div class="col-md-6 col-md-offset-3">
+  <div class="game-container">
+    <div class="game-body">
+      <div class="game-puzzle"></div>
+      <div class="game-input"><input class="game-input-box" type="text"/></div>
+      <div class="game-display"></div>
+      <div class="game-solution"></div>
+    </div>
+  </div>
+</div>
+<div class="col-md-3">
+  <div>
+    Score: <span class="score"></span>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript" src="/js/math.min.js"></script>
+<script type="text/javascript" src="/js/game.js"></script>
+{% endblock %}
