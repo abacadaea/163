@@ -12,6 +12,14 @@ app.secret_key = '@#0-fgljrl230i-0diflkjdflsdf'
 def index():
     return render_template("index.html")
 
+@app.route('/play')
+def play():
+    return render_template("play.html")
+
+@app.route('/practice')
+def practice():
+    return render_template("practice.html")
+
 @app.route('/ajax', methods=['POST'])
 def ajax():
 	print(request.data)

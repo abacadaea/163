@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+{% block css %}
+<link rel="stylesheet" type="text/css" href="/css/game.css">
+{% endblock %}
+
+{% block main_body %}
+<div class="col-md-8 col-md-offset-2">
+  <div class="game-container">
+    <div class="game-body">
+      <div class="game-puzzle"></div>
+      <div class="game-input"><input class="game-input-box" type="text"/></div>
+      <div class="game-display"></div>
+      <div class="game-solution"></div>
+    </div>
+  </div>
+</div>
+<div class="col-md-2">
+  Level:
+  <select id="puzzle-size">
+    <option value="3">3</option>
+    <option value="4" selected>4</option>
+    <option value="5">5</option>
+    <option value="6">6</option>
+  </select>
+  <br>
+  <button id="puzzle-giveup" class="btn btn-warning btn-small">Give up</button>
+</div>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript" src="/js/math.min.js"></script>
+<script type="text/javascript" src="/js/ajax.js"></script>
+<script type="text/javascript" src="/js/game.js"></script>
+<script>
+var cpp = new ContinuousPuzzlePlayer();
+$("#puzzle-size").change(function(event) {
+  cpp.setSize(parseInt($("#puzzle-size").val()))
+});
+$("#puzzle-giveup").click(function(event) {
+  cpp.giveUp();
+});
+</script>
+{% endblock %}

@@ -28,7 +28,7 @@ function Puzzle(p){
     // TODO: strip garbage
     this.expr = this.inputSelector.val().replace(/[^\(\)\+\-\*\/0-9]/g,'');
     try{
-      this.expr_val = math.eval(this.expr);
+      this.expr_val = math.round(math.eval(this.expr), 7);
     }catch(e){
       this.expr_val = "??";
     }
@@ -39,8 +39,6 @@ function Puzzle(p){
       .filterInts()
       .sort();
 
-    console.log(this);
-    
     //hack
     this.expr_args_ok = (this.expr_args.length == this.inputs.length);
     for(var i = 0; i < this.expr_args.length; i ++)
@@ -54,7 +52,6 @@ function Puzzle(p){
   this.check = function(){
     var hasCorrectValue = (this.expr_val == this.target);
     var hasAllInputs = this.expr_args_ok;
-    console.log(this);
     //console.log(hasCorrectValue, hasAllInputs, this.expr_args.sort(), this.S.sort());
 
     return hasCorrectValue && hasAllInputs;
@@ -103,11 +100,19 @@ function Puzzle(p){
  * PuzzlePlayer - module that loads puzzles
  */
 function PuzzlePlayer(puzzles){
+  this.puzzles = [];
+  this.index = 0;
+  this.size = 4;
+
+  this.setSize = function(size) {
+    this.size = size;
+  }
+
   this.play = function(){
     this.displayPuzzle();
   }
 
-  this.oncorrect = function(){
+  this.nextPuzzle = function(){
     this.index ++;
     this.displayPuzzle();
   }
@@ -131,13 +136,19 @@ function PuzzlePlayer(puzzles){
       if (e.keyCode == 13) {
         var correct = pp.puzzles[pp.index].check()
         if (correct)
-          pp.oncorrect();
+          pp.nextPuzzle();
       }
     });
   }
 
+  this.giveUp = function(){
+    var p = this.puzzles[this.index];
+    alert("Solution: " + p.target + " = " + p.solution);
+    this.nextPuzzle();
+  }
+
   this.gameOver = function(){
-    alert("Game over!");
+    alert("Finished!");
   }
 
   // input is list of object puzzles
@@ -152,31 +163,42 @@ function PuzzlePlayer(puzzles){
     );
   }
 
-  this.puzzles = [];
-  this.loadPuzzles(puzzles);
-  this.index = 0;
-}
+  this.loadPuzzleFromAjax = function(number){
+    var size = this.size;
+    var number = (number ? number : 1);
 
-function ContinuousPuzzlePlayer(puzzles){
-  PuzzlePlayer.call(this, puzzles);
-    
-  // scope hack
-  var pp = this;
-  this.loadPuzzleFromAjax = function(){
     var query = {
       "q": "getPuzzles",
-      "size": 4,
-      "number": 5
-      };
+      "size": size,
+      "number": number
+    };
     ajaxQuerySync(query, function(response){
       pp.loadPuzzles(response.output.puzzles);
     });
   }
 
-  this.init = function(){
+  this.loadPuzzles(puzzles);
+}
+
+function ContinuousPuzzlePlayer(puzzles){
+  PuzzlePlayer.call(this, puzzles);
+
+  // hack: override the play function to fetch a number puzzle each time
+  this.play = function () {
     this.loadPuzzleFromAjax();
+    this.displayPuzzle();
+  }
+
+  this.gameOver = function(){
     this.play();
   }
 
-  this.init();
+  this.play();
+}
+
+function FinitePuzzlePlayer(puzzles) {
+  PuzzlePlayer.call(this, puzzles);
+
+  this.loadPuzzleFromAjax(5);
+  this.play();
 }
