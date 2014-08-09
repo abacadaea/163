@@ -9,9 +9,11 @@ Array.prototype.filterInts = function(deleteValue){
   return this;
 }
 function Puzzle(p){
-  this.S = p.S.sort();
-  this.target = p.target;
-  this.solution = p.solution;
+  if (p) {
+    this.inputs = p.inputs.sort();
+    this.target = p.target;
+    this.solution = p.solution;
+  }
   this.id = 0;
   this.expr = "";
   this.expr_val = "";
@@ -40,9 +42,9 @@ function Puzzle(p){
     console.log(this);
     
     //hack
-    this.expr_args_ok = (this.expr_args.length == this.S.length);
+    this.expr_args_ok = (this.expr_args.length == this.inputs.length);
     for(var i = 0; i < this.expr_args.length; i ++)
-      if(this.expr_args[i] != this.S[i]) {
+      if(this.expr_args[i] != this.inputs[i]) {
         this.expr_args_ok = false;
       }
   }
@@ -84,7 +86,7 @@ function Puzzle(p){
     puzzle = this;
 
     this.puzzleDisplaySelector.html(
-      this.S.join(" ") + " -> " + this.target.toString());
+      this.inputs.join(" ") + " -> " + this.target.toString());
 
     this.inputSelector.val("");
     this.inputSelector.keyup(function(e){
@@ -95,16 +97,18 @@ function Puzzle(p){
   }
 }
 
-function PuzzlePlayer(puzzles){
-  this.puzzles = []
-  if (puzzles){
-    for (var i = 0; i < puzzles.length; i ++){
-      this.puzzles.push(new Puzzle(puzzles[i]));
-    }
-  }
-  this.index = 0;
 
+
+/*
+ * PuzzlePlayer - module that loads puzzles
+ */
+function PuzzlePlayer(puzzles){
   this.play = function(){
+    this.displayPuzzle();
+  }
+
+  this.oncorrect = function(){
+    this.index ++;
     this.displayPuzzle();
   }
 
@@ -123,13 +127,11 @@ function PuzzlePlayer(puzzles){
     // scope hack
     var pp = this;
     // function for handling enter button
-    pp.puzzles[pp.index].inputSelector.keyup(function(e){
-      if(e.keyCode == 13){
+    this.puzzles[this.index].inputSelector.keyup(function(e) {
+      if (e.keyCode == 13) {
         var correct = pp.puzzles[pp.index].check()
-        if(correct){
-          pp.index ++;
-          pp.displayPuzzle();
-        }
+        if (correct)
+          pp.oncorrect();
       }
     });
   }
@@ -138,12 +140,43 @@ function PuzzlePlayer(puzzles){
     alert("Game over!");
   }
 
-  this.loadPuzzles = function(json_str){
-    parsed = JSON.parse(json_str);
-    for (var i = 0; i < parsed.length; i ++){
-      this.puzzles.push(
-        new Puzzle(parsed[i].target, parsed[i].S, parsed[i].solution)
-      );
-    }
+  // input is list of object puzzles
+  var pp = this;
+  this.loadPuzzles = function(obj_puzzles){
+    if (!obj_puzzles) return;
+
+    pp.puzzles = pp.puzzles.concat(
+      obj_puzzles.map(function(x){
+        return new Puzzle(x);
+      })
+    );
   }
+
+  this.puzzles = [];
+  this.loadPuzzles(puzzles);
+  this.index = 0;
+}
+
+function ContinuousPuzzlePlayer(puzzles){
+  PuzzlePlayer.call(this, puzzles);
+    
+  // scope hack
+  var pp = this;
+  this.loadPuzzleFromAjax = function(){
+    var query = {
+      "q": "getPuzzles",
+      "size": 4,
+      "number": 5
+      };
+    ajaxQuerySync(query, function(response){
+      pp.loadPuzzles(response.output.puzzles);
+    });
+  }
+
+  this.init = function(){
+    this.loadPuzzleFromAjax();
+    this.play();
+  }
+
+  this.init();
 }

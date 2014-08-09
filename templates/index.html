@@ -4,7 +4,7 @@
 {% endblock %}
 
 {% block main_body %}
-<div class="col-md-6 col-md-offset-3">
+<div class="col-md-8 col-md-offset-2">
   <div class="game-container">
     <div class="game-body">
       <div class="game-puzzle"></div>
@@ -23,5 +23,9 @@
 
 {% block js %}
 <script type="text/javascript" src="/js/math.min.js"></script>
+<script type="text/javascript" src="/js/ajax.js"></script>
 <script type="text/javascript" src="/js/game.js"></script>
+<script>
+var cpp = new ContinuousPuzzlePlayer();
+</script>
 {% endblock %}
