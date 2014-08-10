@@ -1,4 +1,4 @@
-from collections import Counter
+#from collections import Counter
 import itertools
 import fileinput,sys
 
@@ -6,10 +6,14 @@ def hash_list(S):
 	return ','.join([str(int(x)) for x in S])
 
 def set_diff(S, A):
-	s = Counter(S)
-	a = Counter(A)
-	diff = s - a
-	return list(diff.elements())
+	res = list(S)
+	for x in A:
+		res.remove(x)
+	return res
+	#s = Counter(S)
+	#a = Counter(A)
+	#diff = s - a
+	#return list(diff.elements())
 
 # Find all numbers one can make using +-*/ with a set S
 # returns list of key value pairs, where key is the number achieved, value is
