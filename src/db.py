@@ -3,7 +3,7 @@ import MySQLdb
 mysqlHost = "localhost"
 mysqlUser = "ec2-user"
 mysqlPassword = "password"
-mysqlDB = "one_plus_two"
+mysqlDB = "163"
 
 connection = MySQLdb.connect(
 	host = mysqlHost,
